@@ -1,0 +1,31 @@
+<footer class="bg-light text-center py-3 mt-auto w-100">
+    <div class="container">
+        <div class="row justify-content-around">
+            <div class="col align-self-lg-start">
+                <a href="/auth/logout">Logout</a>
+            </div>
+            <div class="col align-self-end">
+                <a href="">Github</a>
+            </div>
+            <div class="col align-self-end">
+                <a href="www.linkedin.com/in/nikolay-vyugin-5141a0322">LinkedIn</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay"></div>
+    <script src="/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/vendor/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="/vendor/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+    <script>
+        // unfocus all buttons after 0.2 seconds
+        $(".btn").on("focus", (e) => {
+            let button = $(e.target);
+            setTimeout(() => {
+                button.blur();
+                button.removeClass("focus");
+            }, 200);
+        });
+    </script>
+</footer>

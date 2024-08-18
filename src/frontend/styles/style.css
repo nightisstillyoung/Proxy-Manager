@@ -1,0 +1,42 @@
+:root {
+    --color1: rgba(27, 99, 193, 0.83)
+}
+
+
+header {
+    height: 3em;
+    margin-bottom: 5em;
+}
+
+.navigation {
+    background-color: #13cc5f;
+}
+
+body {
+    background: rgb(2,0,36);
+    background: linear-gradient(151deg, rgba(2,0,36,1) 0%, rgba(19,204,95,0.979411833092612) 47%, rgba(0,212,255,1) 100%);
+    min-height: 100vh;
+}
+
+#overlay {
+    display: none; /* hidden  by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.message {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* center */
+    z-index: 999;
+}

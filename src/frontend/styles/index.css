@@ -1,0 +1,39 @@
+button#input-area-button {
+    margin-top: 1em;
+    background-color: var(--color1);
+}
+
+#celery-progressbar {
+    background-color: var(--color1);
+}
+
+textarea {
+    min-height: 400px;
+}
+
+label {
+    font-size: 1.2em;
+}
+
+
+#progressbar-done p {
+    color: #28a745;
+}
+
+
+
+.btn-success, .btn-danger {
+    width: 63px;
+}
+
+#format-menu-button {
+    width: 100%;
+}
+
+#format-menu {
+    width: 100%;
+}
+
+.dropdown .form-control-sm:focus {
+    box-shadow: none;
+}

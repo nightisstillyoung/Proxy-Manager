@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<header>
+    <link rel="stylesheet" href="/styles/index.css">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse">
+            <a class="navbar-brand" href="">Proxy Manager</a>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Proxies
+                    </a>
+                    <div class="dropdown-menu" id="proxy-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" data-api="/proxies/alive" id="get-alive-menu" href="#">Get alive</a>
+                        <a class="dropdown-item" data-api="/proxies/all" id="get-all-menu" href="#">Get all</a>
+                        <a class="dropdown-item" data-api="/proxies/alive/download" id="download-alive-menu" href="/proxies/alive/download" download="true">Download alive (txt)</a>
+                        <a class="dropdown-item" data-api="/proxies/all/download" id="download-all-menu" href="/proxies/all/download" download="true">Download all (txt)</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" data-api="/proxies/purge/all"  id="purge-all-menu" href="#" style="color: darkred;">Purge database</a>
+                        <a class="dropdown-item" data-api="/proxies/purge/dead"  id="purge-dead-menu" href="#">Purge dead</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Checker
+                    </a>
+                    <div class="dropdown-menu" id="checker-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" data-api="/proxies/rerun" id="rerun-all-menu" href="#">Re-run all</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" data-api="/proxies/continue_check" id="continue-unchecked-menu" href="#">Continue unchecked</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="page-advanced-search" href="/advanced/search/">Advanced search</a>
+                </li>
+                <li>
+                    <a class="nav-link" id="link-current-session" href="/auth/session">Get current session</a>
+                </li>
+            </ul>
+        </div>
+        <form class="form-inline">
+            <input class="form-control mr-sm-2" type="search" placeholder="127.0.0.1" id="search-input" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" id="search-by-ip" type="submit">Search IP</button>
+        </form>
+    </nav>
+</header>
+{% endblock %}
+
+
+{% block main %}
+<main>
+    <div class="container my-auto">
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="input_area">Input:</label>
+                    <textarea class="form-control" id="input-area" rows="6" placeholder="Input proxies"></textarea>
+                    <button type="button" class="btn btn-primary btn-lg btn-block color1" id="input-area-button">Add</button>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="output-area">Output:</label>
+                    <textarea class="form-control" autocomplete="off" id="output-area" rows="6" placeholder="Output proxies" readonly=""></textarea>
+                    <p style="margin-bottom: 0">Checker stream: </p>
+                    <div class="btn-group btn-group-toggle" id="websocket-options" data-toggle="buttons">
+                        <label class="btn btn-secondary" id="websocket-on">
+                            <input type="radio" name="options" autocomplete="off" checked>Online
+                        </label>
+                        <label class="btn btn-secondary" id="websocket-off">
+                            <input type="radio" name="options" autocomplete="off">Offline
+                        </label>
+                    </div>
+                    <button type="button" id="output-copy-button" class="btn btn-success">Copy</button>
+                    <button type="button" id="output-clear-button" class="btn btn-warning">Clean</button>
+                    <button type="button" id="output-stop-button" class="btn btn-danger">Stop</button>
+                    <p></p>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="format-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Format
+                        </button>
+                        <div class="dropdown-menu" id="format-menu" aria-labelledby="format-menu-button">
+                            <a class="dropdown-item" id="to-proxy-url" href="#">to Proxy URL</a>
+                            <a class="dropdown-item" id="to-cr-ip-port" href="#">to USER:PASS@IP:PORT</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="form-group">
+                    <label for="errors_area">Errors:</label>
+                    <textarea class="form-control" id="error-area" autocomplete="off" rows="6" placeholder="Errors and Invalid proxies" readonly=""></textarea>
+                </div>
+                <div class="form-group text-center">
+                    <button type="button" id="error-clear-button" class="btn btn-secondary">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div id="progressbar-active" class="{% if progressbar_width >= 100 %}hidden{% endif %}">
+                    <p>Progress: </p>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" id="celery-progressbar" style="width: {{ progressbar_width }}%; color: #212529;" data-current-len="{{ current_len }}" aria-valuenow="{{ value_now }}" aria-valuemin="0" aria-valuemax="100">{{ value_now }} checked/{{ current_len }} left</div>
+                    </div>
+                </div>
+
+                <div id="progressbar-done" style="display: {% if progressbar_width < 100 %}hidden{% else %}block{% endif %}">
+                    <p>Checker queue is empty.</p>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+<script type="module" src="/js/index.js"></script>
+</main>
+{% endblock %}

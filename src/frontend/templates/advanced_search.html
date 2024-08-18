@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+
+{% block header %}
+<header>
+    <link rel="stylesheet" href="/styles/search.css">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse">
+            <a class="navbar-brand" href="">Proxy Manager</a>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Main page</a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</header>
+{% endblock %}
+
+
+{% block main %}
+<main>
+    <div class="container">
+        <div class="row justify-content-center"><h1>Filters:</h1></div>
+        <form id="search-form" action="/proxies/search/advanced" oninput="quantity.value=parseInt(limit.value)">
+            <div class="row justify-content-center">
+                <div class="col-6" id="protocols-select">
+                    <h3>Protocol:</h3>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="socks5" name="socks5">
+                      <label class="form-check-label" for="inlineCheckbox1">SOCKS5</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="socks4" name="socks4">
+                      <label class="form-check-label" for="inlineCheckbox1">SOCKS4</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="http" name="http">
+                      <label class="form-check-label" for="inlineCheckbox1">HTTP</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="https" name="https">
+                      <label class="form-check-label" for="inlineCheckbox1">HTTPS</label>
+                    </div>
+                    <small class="form-text">NOTE: any selected protocol means that proxy or alive, or non-checked</small>
+                </div>
+                <div class="col-6" id="check-status-select">
+                    <h3>Status:</h3>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="alive" name="alive" checked>
+                      <label class="form-check-label" for="inlineCheckbox1">Alive</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="dead" name="dead">
+                      <label class="form-check-label" for="inlineCheckbox1">Dead</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="not-checked" name="not-checked">
+                      <label class="form-check-label" for="inlineCheckbox1">Unchecked</label>
+                    </div>
+                </div>
+<!--                <div class="col-4" id="file-extension-select">-->
+<!--                    <h3>Output file format:</h3>-->
+<!--                    <div class="custom-control custom-radio">-->
+<!--                        <input type="radio" id="ext-txt" name="file_ext" value="txt" class="custom-control-input" checked>-->
+<!--                        <label class="custom-control-label" for="ext-txt">.txt</label>-->
+<!--                    </div>-->
+<!--                    <div class="custom-control custom-radio">-->
+<!--                        <input type="radio" id="ext-csv" name="file_ext" value="csv" class="custom-control-input">-->
+<!--                        <label class="custom-control-label" for="ext-csv">.csv</label>-->
+<!--                    </div>-->
+<!--                </div>-->
+                <small class="text-muted form-text">Note: none selected means all selected.</small>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="row">
+                <div class="col-12">
+                    <label for="limit-range">Limit:</label>
+                    <input type="range" class="custom-range" min="1" max="{{ total_proxies }}" step="1" value="{{ total_proxies }}" name="limit" id="limit-range" autocomplete="off">
+                    <output name="quantity">{{ total_proxies }}</output>
+                    <small class="text-muted form-text">Note: After applying all filters, the final amount of proxies may be less.</small>
+                </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="row">
+                <div class="col-12" id="proxy-format">
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="format-url" name="format" value="url" class="custom-control-input" checked>
+                        <label class="custom-control-label" for="format-url">Proxy URL (with protocol://)</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="format-normal" name="format" value="normal" class="custom-control-input">
+                        <label class="custom-control-label" for="format-normal">Normal (username:pass@ip:port)</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="format-custom-radio" name="format" value="custom" class="custom-control-input">
+                        <label class="custom-control-label" for="format-custom-radio">Custom:</label>
+                        <input type="text"
+                               class="form-control form-control-sm"
+                               id="custom-format-string"
+                               name="format-custom"
+                               aria-describedby="Enter your own format"
+                               placeholder="%protocol%://%credentials%%ip%:%port%"
+                               disabled
+                        >
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="submit-row">
+                <button type="submit" class="btn btn-primary btn-lg" id="submit-form">Search</button>
+            </div>
+        </form>
+
+        <div class="row justify-content-center message hidden" id="textarea-row" style="width: 40%;">
+            <div class="col-12">
+                <label for="search-output-area">Output:</label>
+                <textarea class="form-control" autocomplete="off" id="search-output-area" rows="12" placeholder="Output proxies"></textarea>
+                <button type="button" id="output-copy-button" class="btn btn-success">Copy</button>
+                <button type="button" id="output-close-button" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+        <script type="module" src="/js/search.js"></script>
+    </div>
+</main>
+{% endblock %}
