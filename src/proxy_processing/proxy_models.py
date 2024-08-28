@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from typing import Annotated
 from datetime import datetime
 from enum import Enum
-from models import BaseModel
+from models import BaseModel, int_primary_key
 
 
 class Protocol(Enum):
@@ -21,7 +21,6 @@ class Status(Enum):
 
 
 # ====Reusable table types====
-int_primary_key = Annotated[int, mapped_column(primary_key=True)]
 proxy_credential = Annotated[str, mapped_column(String(length=256), default="")]
 
 
@@ -50,7 +49,8 @@ class ProxyModel(BaseModel):
     http: Mapped[bool] = mapped_column(nullable=True)
     https: Mapped[bool] = mapped_column(nullable=True)
 
-    # todo: add ForeignKey for User model (when proper auth will be done)
+    location: Mapped[bool] = mapped_column(String(length=128), nullable=True)
+    latency: Mapped[float] = mapped_column(nullable=True)
 
     @property
     def credentials(self) -> str:
@@ -81,16 +81,6 @@ class ProxyModel(BaseModel):
         else:
             return ""
 
-    def set_protocols_list(self, new_protocols: list[str]) -> None:
-        """
-        List of working protocols for this proxy. Rewrites existing info.
-        :param new_protocols: list of working protocols
-        :return: None
-        """
-        self.socks5 = bool(new_protocols.count("socks5"))
-        self.socks4 = bool(new_protocols.count("socks4"))
-        self.https = bool(new_protocols.count('https'))
-        self.http = bool(new_protocols.count("http"))
 
     @property
     def protocols_list(self) -> list[str]:
@@ -111,6 +101,18 @@ class ProxyModel(BaseModel):
 
         return res
 
+
+    @protocols_list.setter
+    def protocols_list(self, new_protocols: list[str]) -> None:
+        """
+        List of working protocols for this proxy. Rewrites existing info.
+        :param new_protocols: list of working protocols
+        :return: None
+        """
+        self.socks5 = bool(new_protocols.count("socks5"))
+        self.socks4 = bool(new_protocols.count("socks4"))
+        self.https = bool(new_protocols.count('https'))
+        self.http = bool(new_protocols.count("http"))
 
     def get_with_all_protocols(self) -> list[str] | None:
         """

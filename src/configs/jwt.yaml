@@ -1,0 +1,6 @@
+keys:
+  # src/auth_jwt/keys/...
+  private-key: jwt-private.pem
+  public-key: jwt-public.pem
+algorithm: RS256
+expire_hours: !!int 12

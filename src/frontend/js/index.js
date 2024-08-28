@@ -5,6 +5,8 @@ import {WebsocketEndpoint} from "./websockets.js";
 import {ProgressbarManager} from "./progressbar.js";
 import {Navbar} from "./navbar.js";
 import {Formatter} from "./format.js";
+import {Cookie} from "./cookies.js";
+
 
 /**
  * Class that represents all javascript in index page
@@ -236,28 +238,21 @@ class App {
         // setup format settings
         Formatter.setup(this.outputTextarea);
 
-        // setup session link
-        $("#link-current-session").on("click", (e) => {
+        // shows jwt token
+        $("#link-get-jwt").on("click", (e) => {
             e.preventDefault();
+            const jwt = Cookie.readCookie("auth");
 
-            // shows user his useragent and session
-            ApiService.request($(e.target).attr("href"), "", "GET")
-                .then((data) => {
-                    const $resp = $(`
-                        <div class="input-group input-group-sm mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-sm">Session</span>
-                            </div>
-                            <input type="text" value="${data.session}" class="form-control" title="Session" aria-describedby="inputGroup-sizing-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="inputGroup-sizing-sm">User-Agent</span>
-                            </div>
-                            <input type="text" value="${data.user_agent}" class="form-control" title="User-Agent" aria-describedby="inputGroup-sizing-sm">
-                        </div>
-                                        
-                    `)
-                    Alert.success($resp);
-                });
+            const $resp = $(`
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">JWT API token</span>
+                    </div>
+                    <input type="text" value="${jwt}" class="form-control" title="You can use it in your scripts" aria-describedby="inputGroup-sizing-sm">
+                </div>
+                                
+            `)
+            Alert.success($resp);
         });
 
     }

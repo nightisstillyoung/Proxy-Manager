@@ -1,14 +1,22 @@
 import asyncio
 from asyncio import CancelledError, AbstractEventLoop
 from functools import wraps
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Callable, Coroutine
+
+
+from fastapi import Request, Response
+from starlette.responses import JSONResponse
+
+from auth_jwt.exceptions import AuthException
 
 from schemas import SBase
 from models import BaseModel
 
-
 # that value is pydantic model, inherited from SBase parent class
-T = TypeVar('T', bound=SBase)
+TM = TypeVar('TM', bound=SBase)
+
+T = TypeVar("T")
+RT = TypeVar("RT")
 
 
 async def coroutine_error_handler(func):
@@ -43,15 +51,15 @@ def get_or_create_eventloop() -> AbstractEventLoop:
             raise
 
 
-def sync_compatible(async_func):
+def sync_compatible(async_func: Callable[..., Coroutine[T, T, RT]]) -> Callable[..., RT] | Coroutine[T, T, RT]:
     """
     Decorator that makes an async function available in sync code
     """
 
     @wraps(async_func)
-    def wrapper(*args, **kwargs) -> Any:
+    def wrapper(*args: T, **kwargs: T) -> RT | Coroutine[T, T, RT]:
         if asyncio.iscoroutinefunction(async_func) and asyncio.get_event_loop().is_running():
-            # returns Coroutine if we are in async context
+            # return Coroutine if we are in async context
             return async_func(*args, **kwargs)
 
         # if we are in sync context, using event loop
@@ -72,6 +80,8 @@ def sync_compatible(async_func):
     return wrapper
 
 
-def model_to_pydantic(model: BaseModel, pd_model: T) -> T:
+def model_to_pydantic(model: BaseModel, pd_model: TM) -> TM:
     """Converts ORM model to Pydantic model"""
     return pd_model.model_validate(model, from_attributes=True)
+
+

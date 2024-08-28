@@ -17,3 +17,7 @@ asyncpg~=0.29.0
 aiohttp-proxy~=0.1.2
 aiohttp-socks~=0.8.4
 flower~=2.0.1
+pyjwt[crypto]~=2.9.0
+bcrypt~=4.2.0
+python-multipart~=0.0.9
+pytest-aio~=1.9.0

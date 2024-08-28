@@ -42,6 +42,8 @@ class SAdvancedSearch(SBase):
     format_type: str = "url"  # default is url
     format_string: str | None = None
 
+    latency: float | None = 999
+
 
     def __repr__(self) -> str:
         return str(self.model_dump())

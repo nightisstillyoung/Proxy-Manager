@@ -99,12 +99,13 @@ class App {
             json_request.protocols = this.availableProtocols;
         }
 
+        // latency
+        json_request.latency = parseFloat($form.find(`input[name="latency"]`).val());
 
         // statuses, chosen by user
         json_request["alive"] = !!$form.find(`input#alive:checked`).val();
         json_request["dead"] = !!$form.find(`input#dead:checked`).val();
         json_request["not_checked"] = !!$form.find(`input#not-checked:checked`).val();
-
 
         // limit
         // takes limit from <input type="range">

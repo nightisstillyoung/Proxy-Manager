@@ -4,7 +4,7 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="collapse navbar-collapse">
-            <a class="navbar-brand" href="">Proxy repository</a>
+            <a class="navbar-brand" href="">Proxy Manager</a>
         </div>
     </nav>
 </header>
@@ -15,13 +15,13 @@
     <div class="container">
         <div class="row justify-content-md-center">
             <div class="6">
-                <form enctype="multipart/form-data" action="/auth/login" method="POST">
+                <form enctype="multipart/form-data" action="/jwt/issue" method="POST">
               <div class="form-group">
-                <label for="exampleInputEmail1">Username</label>
+                <label for="cr-username">Username</label>
                 <input type="text" class="form-control" id="cr-username" name="username" aria-describedby="emailHelp" placeholder="user">
               </div>
               <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
+                <label for="cr-password">Password</label>
                 <input type="password" class="form-control" id="cr-password" name="password" placeholder="password">
               </div>
               <button type="submit" class="btn btn-primary">Submit</button>

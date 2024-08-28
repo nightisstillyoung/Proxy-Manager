@@ -1,11 +1,22 @@
 import pytest
-from src.redis_manager.conn_manager import get_conn
+import random
+import string
+
+uppercase_chars = string.ascii_uppercase
+lowercase_chars = string.ascii_lowercase
+digits = string.digits
+special_chars = string.punctuation
 
 
-@pytest.fixture(autouse=True, scope="session")
-def clean_session():
-    r = get_conn()
-    r.delete("session")
-    yield
-    r.delete("session")
+def random_password(min_length: int = 8, max_length: int = 64) -> str:
+    """Generates random password"""
+    length = random.randint(min_length, max_length)
 
+    characters = uppercase_chars + lowercase_chars + digits + special_chars
+
+    return ''.join(random.choices(characters, k=length))
+
+
+@pytest.fixture
+def passwords() -> list[str]:
+    return [random_password() for _ in range(0, 5)]

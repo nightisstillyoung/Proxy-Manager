@@ -7,7 +7,9 @@ from redis.asyncio import Redis as AsyncRedis
 from sqlalchemy import null
 from datetime import datetime
 
-from auth.dependencies import auth_data_dependency
+from auth_jwt.dependencies import check_auth
+from proxy_processing.exceptions import ProxyProcessingError, NoFormatStringError, UnknownFormatType, \
+    CheckIsRunningError, NoProxiesError
 from proxy_processing.proxy_models import ProxyModel
 from proxy_processing.proxy_schemas import SProxy, SAdvancedSearch
 from proxy_processing import repository as proxy_repo
@@ -24,13 +26,13 @@ from utils import model_to_pydantic
 router = APIRouter(
     prefix="/proxies",
     tags=["proxies"],
-    dependencies=[Depends(auth_data_dependency)]
+    dependencies=[Depends(check_auth)]
 )
 
 logger = logging.getLogger(__name__)
 
 
-@router.post("/add", response_model=SResponseAPI, response_model_exclude_unset=True, tags=["checker", "push"])
+@router.post("/add", response_model=SResponseAPI, response_model_exclude_unset=True, tags=["checker"])
 async def add_proxies(
         proxies: list[str]
 ):
@@ -42,7 +44,7 @@ async def add_proxies(
 
     # check that list is not empty
     if not len(proxies):
-        return {"status": -1, "details": "No proxies was sent!"}
+        raise NoProxiesError()
 
     # we use two different lists for db optimization
     # store model with provided protocol to return then proxy with protocol to user
@@ -77,7 +79,7 @@ async def add_proxies(
                 else:
                     # renew proxy with new protocols
                     logger.debug(f"Added requested protocol {requested_protocol} for {proxy_model.credentials_ip_port}")
-                    proxy_model.set_protocols_list(list({*proxy_model.protocols_list, requested_protocol}))
+                    proxy_model.protocols_list = list({*proxy_model.protocols_list, requested_protocol})
 
                     to_update.append((proxy_model, requested_protocol))
             else:
@@ -278,7 +280,7 @@ async def advanced_search(search_query: SAdvancedSearch):
         proxies = [str(p) for p in proxy_models]
     elif search_query.format_type == "custom":
         if search_query.format_string is None:
-            return {"status": -1, "details": f"While {search_query.format_type=}, format_string is null."}
+            raise NoFormatStringError()
         # user wants custom formatting
         for p in proxy_models:
             _ = search_query.format_string\
@@ -296,8 +298,7 @@ async def advanced_search(search_query: SAdvancedSearch):
 
     # unknown formatting option
     else:
-        return {"status": -2, "details": f"Unknown {search_query.format_type=}. It can be or 'url', or 'normal', "
-                                         f"or 'custom'."}
+        raise UnknownFormatType()
 
     return {"status": 0, "data": proxies}
 
@@ -343,7 +344,7 @@ async def purge_all():
 
     # to prevent bugs we do not purge anything while check is going
     if progress["current_len"] > 0:
-        return {"status": -1, "details": "You cannot purge database during active check."}
+        raise CheckIsRunningError()
 
     await proxy_repo.purge_all()
     return {"status": 0, "data": []}
@@ -356,7 +357,7 @@ async def purge_dead():
 
     # to prevent bugs we do not purge anything while check is going
     if progress["current_len"] > 0:
-        return {"status": -1, "details": "You cannot purge database during active check."}
+        raise CheckIsRunningError()
 
     await proxy_repo.purge_dead()
     return {"status": 0, "data": []}

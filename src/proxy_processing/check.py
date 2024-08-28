@@ -10,7 +10,7 @@ from aiohttp_proxy import ProxyConnector
 from configs.config import checker_config
 
 
-from proxy_processing.proxy_utils import on_timeout, on_proto
+from proxy_processing.proxy_utils import on_timeout, mark_and_measure_latency
 from proxy_processing.proxy_models import Protocol, ProxyModel
 from utils import sync_compatible
 import logging
@@ -37,7 +37,7 @@ class UnsupportedError(Exception):
 
 
 @on_timeout(timeout=checker_config["timeout"], retries=checker_config["retries"])
-@on_proto("socks4")
+@mark_and_measure_latency("socks4")
 async def check_socks4_proxy(
         host: str,
         port: int,
@@ -99,13 +99,13 @@ async def check_socks4_proxy(
         return False
     except (ConnectionRefusedError, OSError):
         return False
-    except Exception as e:
+    except Exception:
         logger.exception(f"Error with proxy socks4://{host}:{port}")
         return False
 
 
 @on_timeout(timeout=checker_config["timeout"], retries=checker_config["retries"])
-@on_proto("socks5")
+@mark_and_measure_latency("socks5")
 async def check_socks5_proxy(host: str, port: int, username=None, password=None) -> bool:
     """
     socks5(a) proxy checker function.
@@ -211,7 +211,7 @@ async def check_socks5_proxy(host: str, port: int, username=None, password=None)
         return False
     except (ConnectionRefusedError, OSError, UnsupportedError, struct.error):
         return False
-    except Exception as e:
+    except Exception:
         logger.exception(f"Error with proxy socks5://{host}:{port}")
         return False
 
@@ -236,7 +236,11 @@ async def check_http_proxy(
     async with aiohttp.ClientSession(connector=ProxyConnector.from_url(proxy_url)) as session:
         try:
             # add custom header to test that http proxy actually proxies our request or just return its own
-            async with session.get(f"{protocol}://httpbin.org/get", headers={"X-Test": "check me"}, timeout=5) as response:
+            async with session.get(
+                    f"{protocol}://httpbin.org/get",
+                    headers={"X-Test": "check me"},
+                    timeout=5
+            ) as response:
                 if response.status == 200:
                     # if it's bugged or some unknown gateway
                     return "check me" in await response.text()
@@ -244,18 +248,18 @@ async def check_http_proxy(
                     return False
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return False
-        except Exception as e:
+        except Exception:
             logger.exception(f"Error with proxy {protocol}://{host}:{port}")
             return False
 
 
 # register both variations of the same function
-check_https_proxy = on_proto("https")(
+check_https_proxy = mark_and_measure_latency("https")(
     partial(
         check_http_proxy,
         secured=True)
 )
-check_http_proxy = on_proto("http")(check_http_proxy)
+check_http_proxy = mark_and_measure_latency("http")(check_http_proxy)
 
 
 @sync_compatible
@@ -294,7 +298,10 @@ async def check_proxy(proxy_model: ProxyModel) -> ProxyModel:
 
     # run together all coroutines
     logger.debug(f"Run {protocols} for {proxy_model}")
-    result: tuple[tuple[str, bool] | Exception] = await asyncio.gather(*background_tasks, return_exceptions=True)
+    # ex: (True, 'socks4', 0.27976512908935547)
+    # which means that check function succeed to connect via socks4 proto with 0.279... seconds latency
+    result: list[tuple[bool, str, float] | Exception] = await asyncio.gather(*background_tasks, return_exceptions=True)
+
     logger.debug(f"Got result {result} for {proxy_model}")
 
     working_protocols: list[str] = []
@@ -309,19 +316,22 @@ async def check_proxy(proxy_model: ProxyModel) -> ProxyModel:
             continue
 
         assert type(r) is tuple
-        assert len(r) == 2
+        assert len(r) == 3
 
         # Ex: ("socks4", True)
-        if r[1]:
-            working_protocols.append(r[0])
+        if r[0]:
+            working_protocols.append(r[1])
+            # sets minimal latency
+            proxy_model.latency = r[2] if proxy_model.latency is None else min(proxy_model.latency, r[2])
 
     # update proxy status
     if working_protocols:
-        proxy_model.set_protocols_list(working_protocols)
+        proxy_model.protocols_list = working_protocols
         proxy_model.status = "alive"
+
     else:
         proxy_model.status = "dead"
-        proxy_model.set_protocols_list([])
+        proxy_model.protocols_list = []
 
     logger.debug(f"Working protocols for {proxy_model.credentials_ip_port} are {proxy_model.protocols_list}")
     return proxy_model

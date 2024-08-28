@@ -1,4 +1,4 @@
-from sqlalchemy import select, and_, delete, or_, func, Select
+from sqlalchemy import select, and_, delete, or_, func, Select, Result
 from datetime import datetime
 from functools import singledispatch
 
@@ -116,6 +116,27 @@ async def count_rows() -> int:
         return result.scalar()
 
 
+async def get_min_max_latency() -> dict[str, float | int]:
+    """
+    Returns dict with information about maximal and minial latency of proxies
+    {
+    "min": float,
+    "max": float
+    }
+    """
+    async with async_session_maker() as session:
+        query: Select = select(
+            func.min(ProxyModel.latency).label("latency_min"),
+            func.max(ProxyModel.latency).label("latency_max")
+        )
+        result: Result = await session.execute(query)
+
+        result: dict[str, float | int] = dict(result.mappings().one().items())
+
+        return result
+
+
+
 async def insert_many(proxies: list[ProxyModel]) -> list[ProxyModel]:
     """Inserts list of proxies in one transaction for better performance."""
     if not proxies:
@@ -177,6 +198,10 @@ async def search_with_multiple_params(search_query: SAdvancedSearch) -> list[Pro
         # limit
         if search_query.limit > 0:
             query: Select = query.limit(search_query.limit)
+
+        # latency
+        if search_query.latency < 999:
+            and_conditions.append(ProxyModel.latency <= search_query.latency)
 
         # unite them all
         if len(and_conditions):

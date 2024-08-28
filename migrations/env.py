@@ -9,7 +9,9 @@ import sys
 sys.path.append(os.path.join(sys.path[0], 'src'))
 
 from alembic import context
-from proxy_processing.proxy_models import BaseModel
+from proxy_processing.proxy_models import ProxyModel
+from auth_jwt.auth_models import UserModel
+from models import BaseModel
 from configs.config import DB_USER, DB_HOST, DB_PORT, DB_NAME, DB_PASS
 
 # this is the Alembic Config object, which provides

@@ -12,7 +12,6 @@
                     <a class="nav-link" href="/">Main page</a>
                 </li>
             </ul>
-
         </div>
     </nav>
 </header>
@@ -23,7 +22,7 @@
 <main>
     <div class="container">
         <div class="row justify-content-center"><h1>Filters:</h1></div>
-        <form id="search-form" action="/proxies/search/advanced" oninput="quantity.value=parseInt(limit.value)">
+        <form id="search-form" action="/proxies/search/advanced" oninput="quantity.value=parseInt(limit.value); latency_max_limit.value=parseFloat(latency.value)">
             <div class="row justify-content-center">
                 <div class="col-6" id="protocols-select">
                     <h3>Protocol:</h3>
@@ -80,6 +79,22 @@
                     <input type="range" class="custom-range" min="1" max="{{ total_proxies }}" step="1" value="{{ total_proxies }}" name="limit" id="limit-range" autocomplete="off">
                     <output name="quantity">{{ total_proxies }}</output>
                     <small class="text-muted form-text">Note: After applying all filters, the final amount of proxies may be less.</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <label for="latency-range">Max latency (ms):</label>
+                    <input type="range"
+                           class="custom-range"
+                           min="{{ latency_min }}"
+                           max="{{ latency_max }}"
+                           value="{% if latency_max == 999 %}20{% endif %}"
+                           step="0.001"
+                           name="latency"
+                           id="latency-range"
+                           autocomplete="off" {% if latency_max == 999 %}disabled{% endif %}>
+                    <output name="latency_max_limit" {% if latency_max == 999 %}style="display: none;"{% endif %}>{{ latency_max }}</output>
+                    <small class="text-muted form-text">Note: Latency filter does not apply to unchecked or dead proxies.</small>
                 </div>
             </div>
             <div class="dropdown-divider"></div>
