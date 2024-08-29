@@ -43,8 +43,8 @@ Well, this tool is all-in-one and absolutely for free.
    
    ```
 5. `mv .env-deploy .env`
-6`docker compose up`
-7[Open in browser http://localhost:9000](http://localhost:9000)
+6. docker compose up`
+7. [Open in browser http://localhost:9000](http://localhost:9000)
 
 ### Without docker on your own
 1. `cd Proxy-Manager`
