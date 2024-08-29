@@ -42,8 +42,8 @@ Well, this tool is all-in-one and absolutely for free.
    openssl rsa -in ${KEYDIR}jwt-private.pem -outform PEM -pubout -out ${KEYDIR}jwt-public.pem
    
    ```
-5. `mv .env-deploy .env`
-6. `docker compose up`
+5. Run `mv .env-deploy .env`
+6. Run `docker compose up`
 7. [Open in browser http://localhost:9000](http://localhost:9000)
 
 ### Without docker on your own
