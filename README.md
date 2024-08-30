@@ -35,6 +35,9 @@ Well, this tool is all-in-one and absolutely for free.
    # from src
    KEYDIR='src/auth_jwt/keys/'
    
+   # make dir if not exists
+   mkdir ${KEYDIR} || true
+   
    # generate an RSA private key
    openssl genrsa -out ${KEYDIR}jwt-private.pem 2048
    
