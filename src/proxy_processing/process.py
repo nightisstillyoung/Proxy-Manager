@@ -1,10 +1,9 @@
 import logging
-import colorama
 from redis import Redis
 
 from redis_manager.conn_manager import get_conn
 from proxy_processing.repository import get_model_by_id
-from proxy_processing.proxy_models import ProxyModel
+from proxy_processing.models import ProxyModel
 from proxy_processing.check import check_proxy
 from proxy_processing import repository as proxy_db
 

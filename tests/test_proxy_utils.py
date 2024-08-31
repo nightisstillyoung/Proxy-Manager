@@ -1,6 +1,6 @@
 import pytest
 
-from src.proxy_processing.proxy_utils import parse_proxy_dict_from_string
+from src.proxy_processing.utils import parse_proxy_dict_from_string
 
 #####################################################################
 # two tests for critical function that parses proxy data from string

@@ -7,7 +7,7 @@ import asyncio
 import logging
 import os
 
-from auth_jwt.auth_schemas import RegisterUsernameScheme
+from auth_jwt.schemas import RegisterUsernameScheme
 from auth_jwt.repository import AuthRepo
 
 logger = logging.getLogger(__name__)

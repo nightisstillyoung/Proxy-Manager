@@ -5,7 +5,7 @@ from celery import Celery
 
 from configs.config import REDIS_HOST, REDIS_PORT
 from proxy_processing.process import process_proxy
-from proxy_processing.proxy_models import Protocol
+from proxy_processing.models import Protocol
 
 
 

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from typing import Annotated
 from datetime import datetime
 from enum import Enum
-from models import BaseModel, int_primary_key
+from base_models import BaseModel, int_primary_key
 
 
 class Protocol(Enum):

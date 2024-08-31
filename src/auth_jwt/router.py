@@ -1,15 +1,18 @@
+import logging
 from fastapi import APIRouter, Depends, Response
 
-from auth_jwt.auth_models import UserModel
-from auth_jwt.auth_schemas import ChangePasswordScheme
+from auth_jwt.models import UserModel
+from auth_jwt.schemas import ChangePasswordScheme
 from auth_jwt.dependencies import validate_auth_user, check_auth
 from auth_jwt.exceptions import ChangePasswordError
 from auth_jwt.repository import AuthRepo
 from auth_jwt.utils import check_pwd
 from configs.config import jwt_config
-from schemas import SResponseAPI
+from base_schemas import SResponseAPI
 
 router: APIRouter = APIRouter(prefix="/jwt", tags=["JWT"])
+
+logger = logging.getLogger(__name__)
 
 
 @router.post("/issue")

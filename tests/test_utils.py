@@ -1,7 +1,7 @@
 from typing import Any
 import pytest
-from proxy_processing.proxy_models import ProxyModel
-from src.proxy_processing.proxy_utils import parse_proxy_dict_from_string
+from proxy_processing.models import ProxyModel
+from src.proxy_processing.utils import parse_proxy_dict_from_string
 
 ################################################
 # tests that convert function works as expected

@@ -3,9 +3,9 @@ from datetime import datetime
 from functools import singledispatch
 
 from database import async_session_maker
-from proxy_processing.proxy_models import ProxyModel
-from proxy_processing.proxy_schemas import SAdvancedSearch
-from utils import sync_compatible
+from proxy_processing.models import ProxyModel
+from proxy_processing.schemas import SAdvancedSearch
+from base_utils import sync_compatible
 
 
 @sync_compatible

@@ -51,32 +51,8 @@ def on_timeout(timeout: float | int, retries: int = 3) -> Callable[..., Callable
                 except Exception as e:
                     if attempt == retries - 1:
                         raise e
+
         return wrapper
-
-    return decorator
-
-
-def on_proto(protocol: str) -> Callable[..., Callable[..., Coroutine[T, T, tuple[RT, str]]]]:
-    """
-    Registers protocol on check function
-    bool -> ("protocol", bool)
-    Ex:
-    @on_proto("socks4")
-    async def some_check(proxy) -> bool:
-        ...
-
-    res = await some_check(proxy)
-    print(res)
-    # ("socks4", True)
-    """
-
-    def decorator(func: Callable[..., Coroutine[T, T, RT]]) -> Callable[..., Coroutine[T, T, tuple[RT, str]]]:
-        @wraps(func)
-        async def wrapper(*args: T, **kwargs: T) -> tuple[RT, str]:
-            res: RT = await func(*args, **kwargs)
-            return res, protocol
-
-        return cast(Callable[..., Coroutine[T, T, tuple[RT, str]]], wrapper)
 
     return decorator
 
@@ -84,16 +60,15 @@ def on_proto(protocol: str) -> Callable[..., Callable[..., Coroutine[T, T, tuple
 def mark_and_measure_latency(protocol: str) -> Callable[..., Callable[..., Coroutine[T, T, tuple[RT, str, float]]]]:
     """
     Registers protocol on check function and measure latency of proxy
-    bool -> ("protocol", bool)
+    bool -> (bool, protocol: str, latency: float (ms))
     Ex:
-    @on_proto("socks4")
+    @mark_and_measure_latency("socks4")
     async def some_check(proxy) -> bool:
         ...
 
     res = await some_check(proxy)
     print(res)
-    # ("socks4", True)
-
+    # (True, "socks4", 1000.11)
     """
 
     def decorator(func: Callable[..., Coroutine[T, T, RT]]) -> Callable[..., Coroutine[T, T, tuple[RT, str, float]]]:
@@ -107,22 +82,3 @@ def mark_and_measure_latency(protocol: str) -> Callable[..., Callable[..., Corou
         return cast(Callable[..., Coroutine[T, T, tuple[RT, str, float]]], wrapper)
 
     return decorator
-
-
-def measure_latency(func: Callable[..., Coroutine[T, T, RT]]) -> Callable[..., Coroutine[T, T, tuple[RT, float]]]:
-    """
-    Measures latency of a coroutine
-    returns result: Any, latency: float
-    """
-    @wraps(func)
-    async def wrapper(*args: T, **kwargs: T) -> tuple[RT, float]:
-        start_time: float = time.time()
-        result: RT = await func(*args, **kwargs)
-        latency: float = time.time() - start_time
-        return result, latency
-
-    return cast(Callable[..., Coroutine[T, T, tuple[RT, float]]], wrapper)
-
-
-
-

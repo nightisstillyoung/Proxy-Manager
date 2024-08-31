@@ -3,15 +3,19 @@ from annotated_types import MinLen, MaxLen
 from sqlalchemy import Select, select
 from datetime import datetime
 
-from auth_jwt.auth_schemas import RegisterUsernameScheme
+from auth_jwt.schemas import RegisterUsernameScheme
 from auth_jwt.exceptions import TokenAuthError
 from database import async_session_maker
-from auth_jwt.auth_models import UserModel
+from auth_jwt.models import UserModel
 from auth_jwt.utils import hash_pwd
 
 
 class AuthRepo:
     """Repository to interact with the database"""
+
+    def __init__(self):
+        raise Exception("This is a static class")
+
 
     @classmethod
     @overload

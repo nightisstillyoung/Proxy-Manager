@@ -1,9 +1,10 @@
+import logging
 from datetime import datetime
 from typing import Annotated
 from fastapi import Header, Form, Cookie
 from jwt import InvalidAlgorithmError, DecodeError, InvalidSignatureError
 
-from auth_jwt.auth_models import UserModel
+from auth_jwt.models import UserModel
 from auth_jwt.exceptions import (
     AuthException,
     WrongCredentials,
@@ -16,6 +17,8 @@ from auth_jwt.exceptions import (
 from auth_jwt.utils import decode_jwt, encode_jwt, check_pwd
 from auth_jwt.repository import AuthRepo
 from configs.config import jwt_config
+
+logger = logging.getLogger(__name__)
 
 
 async def validate_auth_user(
@@ -31,6 +34,9 @@ async def validate_auth_user(
     # check if password is valid
     if not check_pwd(password, user.password):
         raise WrongCredentials()
+
+    # user logged in
+    logger.info(f"User {username} has logged in.")
 
     # and return jwt token
     return encode_jwt(payload={

@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from proxy_processing.proxy_models import Protocol
-from schemas import SBase
+from proxy_processing.models import Protocol
+from base_schemas import SBase
 
 
 class SProxy(SBase):

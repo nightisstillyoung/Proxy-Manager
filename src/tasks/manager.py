@@ -2,7 +2,7 @@ from celery import Celery
 from redis import Redis
 from redis.asyncio import Redis as AsyncRedis
 
-from proxy_processing.proxy_utils import predict_check_time
+from proxy_processing.utils import predict_check_time
 from redis_manager.conn_manager import get_conn, get_async_conn
 from tasks.tasks import broker
 from abc import ABC

@@ -1,8 +1,8 @@
 from typing import Any
 
 from src.proxy_processing import repository as proxy_db
-from src.proxy_processing.proxy_schemas import SAdvancedSearch
-from src.proxy_processing.proxy_utils import parse_proxy_dict_from_string
+from src.proxy_processing.schemas import SAdvancedSearch
+from src.proxy_processing.utils import parse_proxy_dict_from_string
 
 ############################################
 # this test is only for advanced_search()

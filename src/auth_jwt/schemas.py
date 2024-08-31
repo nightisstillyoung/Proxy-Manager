@@ -3,7 +3,7 @@ from typing import Annotated
 from annotated_types import MinLen, MaxLen
 from pydantic import ConfigDict
 
-from schemas import SBase
+from base_schemas import SBase
 from datetime import datetime
 
 

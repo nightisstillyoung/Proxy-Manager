@@ -10,17 +10,17 @@ from datetime import datetime
 from auth_jwt.dependencies import check_auth
 from proxy_processing.exceptions import ProxyProcessingError, NoFormatStringError, UnknownFormatType, \
     CheckIsRunningError, NoProxiesError
-from proxy_processing.proxy_models import ProxyModel
-from proxy_processing.proxy_schemas import SProxy, SAdvancedSearch
+from proxy_processing.models import ProxyModel
+from proxy_processing.schemas import SProxy, SAdvancedSearch
 from proxy_processing import repository as proxy_repo
-from proxy_processing.proxy_utils import predict_check_time, parse_proxy_dict_from_string
+from proxy_processing.utils import predict_check_time, parse_proxy_dict_from_string
 from proxy_processing.regex import ip_expr
 from redis_manager.conn_manager import get_async_conn
 from tasks.tasks import process_proxy_worker
 from tasks.manager import async_celery_manager, celery_manager
-from schemas import SResponseAPI
+from base_schemas import SResponseAPI
 from websocket import ws_manager
-from utils import model_to_pydantic
+from base_utils import model_to_pydantic
 
 
 router = APIRouter(

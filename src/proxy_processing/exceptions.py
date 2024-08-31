@@ -1,5 +1,6 @@
-from base_exceptions import BaseAppError
 from fastapi import status
+
+from base_exceptions import BaseAppError
 
 
 class ProxyProcessingError(BaseAppError):

@@ -1,16 +1,10 @@
 import asyncio
 from asyncio import CancelledError, AbstractEventLoop
 from functools import wraps
-from typing import Any, TypeVar, Callable, Coroutine
+from typing import TypeVar, Callable, Coroutine
 
-
-from fastapi import Request, Response
-from starlette.responses import JSONResponse
-
-from auth_jwt.exceptions import AuthException
-
-from schemas import SBase
-from models import BaseModel
+from base_schemas import SBase
+from base_models import BaseModel
 
 # that value is pydantic model, inherited from SBase parent class
 TM = TypeVar('TM', bound=SBase)
@@ -85,3 +79,11 @@ def model_to_pydantic(model: BaseModel, pd_model: TM) -> TM:
     return pd_model.model_validate(model, from_attributes=True)
 
 
+class Singleton(type):
+    """Implements singleton pattern"""
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]

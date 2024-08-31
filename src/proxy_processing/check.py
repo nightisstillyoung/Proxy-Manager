@@ -3,17 +3,14 @@ import struct
 import traceback
 from functools import partial
 from typing import Coroutine
-
+import logging
 import aiohttp
 from aiohttp_proxy import ProxyConnector
 
 from configs.config import checker_config
-
-
-from proxy_processing.proxy_utils import on_timeout, mark_and_measure_latency
-from proxy_processing.proxy_models import Protocol, ProxyModel
-from utils import sync_compatible
-import logging
+from proxy_processing.utils import on_timeout, mark_and_measure_latency
+from proxy_processing.models import Protocol, ProxyModel
+from base_utils import sync_compatible
 
 SOCKS4_REQUEST_GRANTED = 0x5A
 SOCKS_VERSION = 4

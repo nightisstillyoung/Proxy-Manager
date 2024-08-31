@@ -4,9 +4,9 @@ from typing import Any
 import pytest
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from src.proxy_processing.proxy_schemas import SAdvancedSearch
+from src.proxy_processing.schemas import SAdvancedSearch
 from src.proxy_processing import repository as proxy_db
-from src.proxy_processing.proxy_utils import parse_proxy_dict_from_string
+from src.proxy_processing.utils import parse_proxy_dict_from_string
 from src.configs.config import DB_PASS, DB_PORT, DB_HOST, DB_USER
 
 ######################################
