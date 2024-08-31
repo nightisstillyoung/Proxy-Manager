@@ -39,7 +39,7 @@ app.add_exception_handler(ProxyProcessingError, proxy_error_handler)
 app.add_exception_handler(HTTPException, base_exception_handler)
 
 # add middleware
-app.add_middleware("http", base_middleware)
+app.middleware("http")(base_middleware)
 
 
 # CORS
