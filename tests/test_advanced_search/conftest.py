@@ -1,12 +1,11 @@
 import asyncio
-from typing import AsyncGenerator
-
 import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from src.configs.config import DB_PASS, DB_PORT, DB_HOST, DB_USER
 from src.proxy_processing import repository as proxy_db
+
 
 # fixes error when metadata with name proxy already exists
 ProxyModel = proxy_db.ProxyModel
@@ -78,5 +77,7 @@ async def table(engine):
 
 @pytest.fixture(scope="function", autouse=True)
 def session_mock(monkeypatch, engine):
+    """Patches databaseManager (see src/database.py) so now it connects to test database"""
     test_maker = async_sessionmaker(engine, expire_on_commit=False)
-    monkeypatch.setattr(proxy_db, "async_session_maker", test_maker)
+
+    monkeypatch.setattr(proxy_db.db_manager, "_session_factory", test_maker)

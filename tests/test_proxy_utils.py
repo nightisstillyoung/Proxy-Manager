@@ -10,12 +10,14 @@ from src.proxy_processing.utils import parse_proxy_dict_from_string
 
 # (data, expected result)
 good_test_data = [
-    ('socks4://127.0.0.1:9050', {'protocol': 'socks4', 'ip': '127.0.0.1', 'port': '9050', 'socks4': True}),
-    ('1.2.3.5:1234', {'ip': '1.2.3.5', 'port': '1234'}),
+    ('socks4://127.0.0.1:9050', {'protocol': 'socks4', 'ip': '127.0.0.1', 'port': '9050', 'socks4': True,
+                                 'unique_index': '127.0.0.19050'}),
+
+    ('1.2.3.5:1234', {'ip': '1.2.3.5', 'port': '1234', 'unique_index': '1.2.3.51234'}),
 
     ('socks5://admin:secret@5.6.90.20:9060',
      {'protocol': 'socks5', 'username': 'admin', 'password': 'secret', 'ip': '5.6.90.20', 'port': '9060',
-      'socks5': True})
+      'socks5': True, 'unique_index': '5.6.90.209060adminsecret'})
 ]
 
 bad_test_data = [

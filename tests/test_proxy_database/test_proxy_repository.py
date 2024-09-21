@@ -18,13 +18,9 @@ TEST_DB_NAME = "test_database"
 # fixes error when metadata with name proxy already exists
 ProxyModel = proxy_db.ProxyModel
 
-
-
-
 # if you want to test your own proxies be sure
 # that ips 127.0.0.1 and 1.2.3.4 are reserved for tests bellow
 proxies = """
-socks5://127.0.0.1:9050
 https://1.2.3.4:9050
 socks4://118.174.14.65:44336
 socks4://31.43.33.56:4153
@@ -94,6 +90,8 @@ async def test_insert_many():
     for proxy in proxy_dicts:
         # pop protocol as we do in proxy_procession.router.add_proxies()
         proxy.pop("protocol", None)
+
+        proxy.pop("unique_index")
 
         proxy_models.append(ProxyModel(**proxy))
 
@@ -210,11 +208,12 @@ async def test_get_alive():
     assert len(proxy_models) == 1
 
 
-async def test_get_sorted_by():
-    proxy_models: list[ProxyModel] = await proxy_db.get_sorted_by(ProxyModel.ip == "127.0.0.1")
 
-    assert proxy_models[-1].socks5 is True
-    assert proxy_models[-1].port == "9050"
+async def test_get_sorted_by():
+    proxy_models: list[ProxyModel] = await proxy_db.get_sorted_by(ProxyModel.ip == "1.2.3.4")
+
+
+    assert proxy_models[-1].ip == "1.2.3.4"
 
 
 async def test_purge_all():

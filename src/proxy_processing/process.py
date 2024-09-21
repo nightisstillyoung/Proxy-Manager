@@ -27,6 +27,11 @@ def process_proxy(proxy_id: int, protocol: str | None) -> None:
 
     logger.debug(f"Started check for {proxy_model} with protocol {protocol if protocol else 'to find'}")
 
+
+    if proxy_model is None:
+        logger.warning("Proxy with id %s is None", str(proxy_id))
+        return
+
     # runs checks for all available protocols
     proxy_model: ProxyModel = check_proxy(proxy_model)
 

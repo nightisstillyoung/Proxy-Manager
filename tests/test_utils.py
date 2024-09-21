@@ -13,7 +13,7 @@ from src.proxy_processing.utils import parse_proxy_dict_from_string
 def test_model_to_pydantic():
     proxy_dict: dict[str, Any] = parse_proxy_dict_from_string("socks5://127.0.0.1:9050")
     proxy_dict.pop("protocol")
-
+    proxy_dict.pop("unique_index")
 
     proxy_model: ProxyModel = ProxyModel(**proxy_dict)
 

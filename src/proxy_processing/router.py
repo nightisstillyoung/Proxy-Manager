@@ -46,10 +46,18 @@ async def add_proxies(
     if not len(proxies):
         raise NoProxiesError()
 
+    # remove duplicated strings
+    proxies = list(set(proxies))
+
+
     # we use two different lists for db optimization
     # store model with provided protocol to return then proxy with protocol to user
     to_update: list[tuple[ProxyModel, str] | None] = []
-    to_add: list[tuple[ProxyModel, str] | None] = []
+
+    # key - unique index to prevent duplicate inserts
+    proxies_to_add_unique: dict[str, tuple[ProxyModel, str]] = {}
+
+
     bad_proxies: list[str] = []
     valid_proxies: list[tuple[ProxyModel, str] | None] = []
 
@@ -66,7 +74,7 @@ async def add_proxies(
         # if proxy exists
         proxy_model: ProxyModel | None = await proxy_repo.get_model_by_dict(proxy)
 
-        if proxy_model:
+        if proxy_model is not None:
             # proxy exists
             if requested_protocol:
                 # provided proxy string by client contains protocol
@@ -87,22 +95,36 @@ async def add_proxies(
                 logger.info(f"Bypassed exact the same proxy without protocol: {proxy}")
                 # so we just bypass it too
 
+            assert proxy_model is not None
             valid_proxies.append((proxy_model, requested_protocol))
         else:
             # if there is no proxy in database we add it
             logger.debug(f"Added new proxy {proxy}")
+            unique_index: str = proxy.pop("unique_index")
+            if proxies_to_add_unique.get(unique_index) is not None:
+                logger.warning("Duplicate proxy %s", i)
+                continue
             proxy_model: ProxyModel = ProxyModel(**proxy)
-            to_add.append(
-                (
+            assert proxy_model is not None
+            proxies_to_add_unique[unique_index] = (
                     proxy_model,
                     requested_protocol
                 )
-            )
             valid_proxies.append((proxy_model, requested_protocol))
 
-    # insert and update proxies
-    await proxy_repo.insert_many([i[0] for i in to_add])
+    # update proxies
     await proxy_repo.update_many([i[0] for i in to_update])
+
+    # convert dict to list
+    to_add: list[tuple[ProxyModel, str | None]] = []
+    for key, value in list(proxies_to_add_unique.items()):
+        to_add.append(
+            value
+        )
+
+    # and insert them in database
+    await proxy_repo.insert_many([i[0] for i in to_add])
+
 
     logger.info(f"Inserted {len(to_add)} new proxies, {len(to_update)} updated")
 
@@ -196,7 +218,7 @@ async def re_run_check(limit: int = -1):
 
     # get new len for logs
     redis_conn: AsyncRedis = get_async_conn()
-    initial_len: int = redis_conn.get("initial_len")
+    initial_len: int = await redis_conn.get("initial_len")
     logger.info(f"initial_len={initial_len}")
 
     # add proxies to celery

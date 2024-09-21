@@ -24,6 +24,10 @@ def parse_proxy_dict_from_string(proxy_str: str) -> dict[str, str | bool | list]
     if proxy_dict.get("protocol") is not None:
         proxy_dict[proxy_dict["protocol"]] = True
 
+    # ip, port, username, password
+    proxy_dict["unique_index"] = (proxy_dict.get("ip") + proxy_dict.get("port") + \
+                                  proxy_dict.get("username", "") + proxy_dict.get("password", ""))
+
     return proxy_dict
 
 

@@ -59,8 +59,13 @@ class App {
                 return;
             }
 
-            // make it readonly while making request
-            this.inputTextarea.lock();
+//            // make it readonly while making request
+//            this.inputTextarea.lock();
+//
+//            // in case of too long request we release it
+//            setTimeout(() => {
+//            this.inputTextarea.release();
+//            }, 5000)
 
             // send them all to our API
             ApiService.request("/proxies/add", lines)
@@ -88,10 +93,10 @@ class App {
 
                     return data;
                 })
-                .finally(() => {
-                    // make it mutable again
-                    this.inputTextarea.release();
-                });
+//                .finally(() => {
+//                    // make it mutable again
+//                    this.inputTextarea.release();
+//                });
         });
 
     }

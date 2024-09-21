@@ -70,6 +70,8 @@ async def test_partial_check_simulation():
         # pop protocol as we do in proxy_procession.router.add_proxies()
         proxy.pop("protocol", None)
 
+        proxy.pop("unique_index")
+
         proxy_models.append(ProxyModel(**proxy))
 
     # insert in test database
